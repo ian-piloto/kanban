@@ -3,6 +3,8 @@ import Login from './pages/Login';
 import Dashboard from './pages/Dashboard';
 import Board from './pages/Board';
 import Profile from './pages/Profile';
+import Categories from './pages/Categories';
+import Settings from './pages/Settings';
 import Layout from './components/Layout';
 
 function App() {
@@ -15,6 +17,8 @@ function App() {
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/board" element={<Board />} />
           <Route path="/profile" element={<Profile />} />
+          <Route path="/categorias" element={<Categories />} />
+          <Route path="/settings" element={<Settings />} />
         </Route>
       </Routes>
     </BrowserRouter>

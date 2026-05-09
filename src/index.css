@@ -10,23 +10,40 @@
   --color-brand-600: #2563eb;
   --color-brand-700: #1d4ed8;
   
-  --color-dark-bg: #0f172a;
-  --color-dark-card: #1e293b;
-  --color-dark-border: #334155;
-  --color-dark-text: #f8fafc;
-  --color-dark-muted: #94a3b8;
+  --color-dark-bg: var(--bg);
+  --color-dark-card: var(--card);
+  --color-dark-border: var(--border);
+  --color-dark-text: var(--text);
+  --color-dark-muted: var(--muted);
   
   --animate-gradient-x: gradient-x 3s ease infinite;
 }
 
+:root {
+  --bg: #0f172a;
+  --card: #1e293b;
+  --border: #334155;
+  --text: #f8fafc;
+  --muted: #94a3b8;
+}
+
+.light {
+  --bg: #f8fafc;
+  --card: #ffffff;
+  --border: #e2e8f0;
+  --text: #0f172a;
+  --muted: #64748b;
+}
+
 body {
   font-family: 'Inter', sans-serif;
-  background-color: var(--color-dark-bg);
-  color: var(--color-dark-text);
+  background-color: var(--bg);
+  color: var(--text);
   -webkit-font-smoothing: antialiased;
   margin: 0;
   display: flex;
   min-height: 100vh;
+  transition: background-color 0.3s, color 0.3s;
 }
 
 #root {

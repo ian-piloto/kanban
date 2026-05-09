@@ -28,6 +28,15 @@ export default function Layout() {
     return () => unsubscribe();
   }, [navigate]);
 
+  useEffect(() => {
+    const savedTheme = localStorage.getItem('theme') || 'dark';
+    if (savedTheme === 'light') {
+      document.documentElement.classList.add('light');
+    } else {
+      document.documentElement.classList.remove('light');
+    }
+  }, []);
+
   const handleLogout = async () => {
     await signOut(auth);
     navigate('/login');
@@ -65,11 +74,11 @@ export default function Layout() {
                <KanbanSquare className="w-5 h-5" />
                <span>Minhas Tarefas</span>
              </Link>
-             <Link to="#" className={navItemClass('/categorias')}>
+             <Link to="/categorias" className={navItemClass('/categorias')}>
                <CheckSquare className="w-5 h-5" />
                <span>Categorias</span>
              </Link>
-             <Link to="#" className={navItemClass('/settings')}>
+             <Link to="/settings" className={navItemClass('/settings')}>
                <Settings className="w-5 h-5" />
                <span>Configurações</span>
              </Link>
