@@ -1,7 +1,15 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { LayoutDashboard } from 'lucide-react';
-import axios from 'axios';
+import { auth, db } from '../firebase';
+import { 
+  signInWithEmailAndPassword, 
+  createUserWithEmailAndPassword, 
+  updateProfile,
+  GoogleAuthProvider,
+  signInWithPopup
+} from 'firebase/auth';
+import { doc, setDoc, getDoc } from 'firebase/firestore';
 
 export default function Login() {
   const [isRegister, setIsRegister] = useState(false);
@@ -13,30 +21,70 @@ export default function Login() {
   
   const navigate = useNavigate();
 
+  const handleGoogleLogin = async () => {
+    setError('');
+    setLoading(true);
+    const provider = new GoogleAuthProvider();
+    try {
+      const result = await signInWithPopup(auth, provider);
+      const user = result.user;
+
+      // Verifica se o usuário já existe no Firestore, se não, cria
+      const userDoc = await getDoc(doc(db, 'users', user.uid));
+      if (!userDoc.exists()) {
+        await setDoc(doc(db, 'users', user.uid), {
+          name: user.displayName,
+          email: user.email,
+          avatar_url: user.photoURL,
+          created_at: new Date().toISOString()
+        });
+      }
+      navigate('/dashboard');
+    } catch (err) {
+      console.error(err);
+      if (err.code !== 'auth/popup-closed-by-user') {
+        setError('Erro ao entrar com Google.');
+      }
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
     setLoading(true);
 
     try {
-      const endpoint = isRegister ? '/api/auth/register' : '/api/auth/login';
-      const payload = isRegister ? { name, email, password } : { email, password };
-      
-      const res = await axios.post(`http://localhost:5000${endpoint}`, payload);
-      
-      if (!isRegister) {
-        localStorage.setItem('kanban_token', res.data.token);
-        localStorage.setItem('kanban_user', JSON.stringify(res.data.user));
-        navigate('/dashboard');
+      if (isRegister) {
+        const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+        const user = userCredential.user;
+        
+        // Atualiza o nome no Firebase Auth
+        await updateProfile(user, { displayName: name });
+        
+        // Cria o documento do usuário no Firestore para dados extras (opcional)
+        await setDoc(doc(db, 'users', user.uid), {
+          name,
+          email,
+          avatar_url: `https://api.dicebear.com/7.x/initials/svg?seed=${encodeURIComponent(name)}&backgroundColor=0f172a&textColor=f8fafc`,
+          created_at: new Date().toISOString()
+        });
       } else {
-        // Auto login apos registro
-        const loginRes = await axios.post('http://localhost:5000/api/auth/login', { email, password });
-        localStorage.setItem('kanban_token', loginRes.data.token);
-        localStorage.setItem('kanban_user', JSON.stringify(loginRes.data.user));
-        navigate('/dashboard');
+        await signInWithEmailAndPassword(auth, email, password);
       }
+      
+      // O Firebase mantém a sessão, mas se quiser manter compatibilidade com o código atual:
+      // Redireciona e o Layout lidará com a verificação de auth
+      navigate('/dashboard');
+      
     } catch (err) {
-      setError(err.response?.data?.error || 'Ocorreu um erro inesperado.');
+      console.error(err);
+      let msg = 'Ocorreu um erro inesperado.';
+      if (err.code === 'auth/email-already-in-use') msg = 'Este e-mail já está em uso.';
+      if (err.code === 'auth/wrong-password' || err.code === 'auth/user-not-found' || err.code === 'auth/invalid-credential') msg = 'Credenciais inválidas.';
+      if (err.code === 'auth/weak-password') msg = 'A senha deve ter pelo menos 6 caracteres.';
+      setError(msg);
     } finally {
       setLoading(false);
     }
@@ -111,6 +159,24 @@ export default function Login() {
             {loading ? 'Aguarde...' : (isRegister ? 'Criar Conta' : 'Entrar')}
           </button>
         </form>
+
+        <div className="relative my-6">
+          <div className="absolute inset-0 flex items-center">
+            <div className="w-full border-t border-dark-border/50"></div>
+          </div>
+          <div className="relative flex justify-center text-xs uppercase">
+            <span className="bg-dark-bg px-2 text-dark-muted">Ou continue com</span>
+          </div>
+        </div>
+
+        <button 
+          onClick={handleGoogleLogin}
+          disabled={loading}
+          className="w-full flex items-center justify-center gap-3 bg-white hover:bg-gray-100 text-gray-900 font-semibold rounded-xl px-4 py-3 transition-all focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50"
+        >
+          <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google" className="w-5 h-5" />
+          Entrar com Google
+        </button>
 
         <div className="mt-6 text-center">
           <p className="text-sm text-dark-muted">

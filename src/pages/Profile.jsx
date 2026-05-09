@@ -1,18 +1,25 @@
 import { useNavigate } from 'react-router-dom';
 import { UserCircle, LogOut, Mail, Hash } from 'lucide-react';
+import { auth } from '../firebase';
+import { signOut } from 'firebase/auth';
 
 export default function Profile() {
   const navigate = useNavigate();
-  const userStr = localStorage.getItem('kanban_user');
-  const user = userStr ? JSON.parse(userStr) : null;
+  const currentUser = auth.currentUser;
 
-  const handleLogout = () => {
-    localStorage.removeItem('kanban_token');
-    localStorage.removeItem('kanban_user');
+  const handleLogout = async () => {
+    await signOut(auth);
     navigate('/login');
   };
 
-  if (!user) return null;
+  if (!currentUser) return null;
+
+  const user = {
+    name: currentUser.displayName || 'Usuário',
+    email: currentUser.email,
+    id: currentUser.uid,
+    avatar_url: currentUser.photoURL || `https://api.dicebear.com/7.x/initials/svg?seed=${encodeURIComponent(currentUser.displayName || 'U')}&backgroundColor=0f172a&textColor=f8fafc`
+  };
 
   return (
     <div className="flex-1 flex items-center justify-center py-10 w-full h-full relative">
@@ -54,7 +61,7 @@ export default function Profile() {
             </div>
             <div>
                <p className="text-sm font-medium text-dark-muted">ID da Conta</p>
-               <p className="text-white font-medium">#{user.id.toString().padStart(6, '0')}</p>
+               <p className="text-white font-medium">#{user.id.substring(0, 8)}...</p>
             </div>
           </div>
         </div>

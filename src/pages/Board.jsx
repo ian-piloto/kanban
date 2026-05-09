@@ -1,9 +1,21 @@
 import { useState, useEffect } from 'react';
-import axios from 'axios';
 import { Plus, Users, Clock, Trash2, Edit2, Tag, AlertTriangle, GripVertical, Timer } from 'lucide-react';
 import { DndContext, useSensor, useSensors, PointerSensor, closestCorners, DragOverlay } from '@dnd-kit/core';
 import { useDroppable, useDraggable } from '@dnd-kit/core';
 import { CSS } from '@dnd-kit/utilities';
+import { db, auth } from '../firebase';
+import { 
+  collection, 
+  query, 
+  where, 
+  onSnapshot, 
+  addDoc, 
+  updateDoc, 
+  deleteDoc, 
+  doc, 
+  serverTimestamp,
+  or
+} from 'firebase/firestore';
 
 // --- Formatação de Tempo ---
 const formatTime = (seconds) => {
@@ -77,6 +89,8 @@ const DraggableTask = ({ task, onEdit, onDelete, onShare, isOverlay = false }) =
     zIndex: isDragging ? 999 : 1,
   };
 
+  const isOwned = task.creator_id === auth.currentUser?.uid;
+
   return (
     <div 
       ref={setNodeRef} 
@@ -103,7 +117,7 @@ const DraggableTask = ({ task, onEdit, onDelete, onShare, isOverlay = false }) =
                 <Tag className="w-2.5 h-2.5" />{tag}
               </span>
           ))}
-          {!task.isOwned && (
+          {!isOwned && (
             <span className="text-xs px-2 py-1 flex items-center gap-1 rounded-md bg-purple-500/10 text-purple-400 font-medium border border-purple-500/20" title={`Criado por outro usuário`}>
               <Users className="w-3 h-3" /> Shared
             </span>
@@ -111,13 +125,15 @@ const DraggableTask = ({ task, onEdit, onDelete, onShare, isOverlay = false }) =
         </div>
         
         <div className="opacity-0 group-hover:opacity-100 transition-opacity flex items-center gap-1">
-          <button 
-            onPointerDown={(e) => e.stopPropagation()} 
-            onClick={() => onShare(task)} 
-            className="p-1.5 text-dark-muted hover:text-brand-400 rounded-lg hover:bg-dark-card" title="Compartilhar"
-          >
-            <Users className="w-4 h-4" />
-          </button>
+          {isOwned && (
+            <button 
+              onPointerDown={(e) => e.stopPropagation()} 
+              onClick={() => onShare(task)} 
+              className="p-1.5 text-dark-muted hover:text-brand-400 rounded-lg hover:bg-dark-card" title="Compartilhar"
+            >
+              <Users className="w-4 h-4" />
+            </button>
+          )}
           <button 
             onPointerDown={(e) => e.stopPropagation()} 
             onClick={() => onEdit(task)} 
@@ -125,13 +141,15 @@ const DraggableTask = ({ task, onEdit, onDelete, onShare, isOverlay = false }) =
           >
             <Edit2 className="w-4 h-4" />
           </button>
-          <button 
-            onPointerDown={(e) => e.stopPropagation()} 
-            onClick={() => onDelete(task.id)} 
-            className="p-1.5 text-dark-muted hover:text-red-400 rounded-lg hover:bg-dark-card" title="Excluir"
-          >
-            <Trash2 className="w-4 h-4" />
-          </button>
+          {isOwned && (
+            <button 
+              onPointerDown={(e) => e.stopPropagation()} 
+              onClick={() => onDelete(task.id)} 
+              className="p-1.5 text-dark-muted hover:text-red-400 rounded-lg hover:bg-dark-card" title="Excluir"
+            >
+              <Trash2 className="w-4 h-4" />
+            </button>
+          )}
         </div>
       </div>
 
@@ -181,9 +199,6 @@ export default function Board() {
   const [tagInput, setTagInput] = useState('');
   const [shareEmail, setShareEmail] = useState('');
 
-  const token = localStorage.getItem('kanban_token');
-  const headers = { Authorization: `Bearer ${token}` };
-
   const sensors = useSensors(
     useSensor(PointerSensor, {
       activationConstraint: {
@@ -197,20 +212,34 @@ export default function Board() {
     setTimeout(() => setErrorMsg(''), 4000);
   };
 
-  const loadTasks = async () => {
-    try {
-      const res = await axios.get('http://localhost:5000/api/tasks', { headers });
-      setTasks(res.data);
-    } catch (err) {
-      console.error(err);
-    } finally {
-      setLoading(false);
-    }
-  };
-
   useEffect(() => {
-    if (token) loadTasks();
-  }, [token]);
+    const user = auth.currentUser;
+    if (!user) return;
+
+    // Escutar tarefas criadas por mim ou compartilhadas comigo
+    const q = query(
+      collection(db, 'tasks'),
+      or(
+        where('creator_id', '==', user.uid),
+        where('sharedWith', 'array-contains', user.email)
+      )
+    );
+
+    const unsubscribe = onSnapshot(q, (snapshot) => {
+      const tasksData = snapshot.docs.map(doc => ({
+        id: doc.id,
+        ...doc.data()
+      }));
+      setTasks(tasksData);
+      setLoading(false);
+    }, (err) => {
+      console.error(err);
+      showError("Erro ao carregar tarefas em tempo real.");
+      setLoading(false);
+    });
+
+    return () => unsubscribe();
+  }, []);
 
   const handleSaveTask = async (e) => {
     e.preventDefault();
@@ -220,21 +249,35 @@ export default function Board() {
     }
 
     const payload = {
-      ...form,
-      allocated_time: (parseInt(form.alloc_hours || 0) * 3600) + (parseInt(form.alloc_mins || 0) * 60)
+      title: form.title,
+      description: form.description || '',
+      priority: form.priority || 'media',
+      status: form.status || 'fazer',
+      category: form.category || '',
+      deadline: form.deadline || '',
+      tags: form.tags || [],
+      allocated_time: (parseInt(form.alloc_hours || 0) * 3600) + (parseInt(form.alloc_mins || 0) * 60),
+      time_spent: currentTask?.time_spent || 0,
+      last_started_at: currentTask?.last_started_at || null,
+      completed_at: currentTask?.completed_at || null
     };
 
     try {
       if (currentTask && currentTask.id) {
-        await axios.put(`http://localhost:5000/api/tasks/${currentTask.id}`, payload, { headers });
+        await updateDoc(doc(db, 'tasks', currentTask.id), payload);
       } else {
-        await axios.post('http://localhost:5000/api/tasks', payload, { headers });
+        await addDoc(collection(db, 'tasks'), {
+          ...payload,
+          creator_id: auth.currentUser.uid,
+          created_at: serverTimestamp(),
+          sharedWith: []
+        });
       }
       setIsModalOpen(false);
       resetForm();
-      loadTasks();
     } catch (err) {
-      showError(err.response?.data?.error || "Erro amigável: Não foi possível salvar a tarefa no momento.");
+      console.error(err);
+      showError("Não foi possível salvar a tarefa.");
     }
   };
 
@@ -262,23 +305,46 @@ export default function Board() {
   const confirmDelete = async () => {
     if (!deleteConfirmId) return;
     try {
-      await axios.delete(`http://localhost:5000/api/tasks/${deleteConfirmId}`, { headers });
+      await deleteDoc(doc(db, 'tasks', deleteConfirmId));
       setDeleteConfirmId(null);
-      loadTasks();
     } catch (err) {
-      setDeleteConfirmId(null);
-      showError("Apenas o dono pode deletar esta tarefa.");
+      console.error(err);
+      showError("Erro ao deletar tarefa.");
     }
   };
 
   const handleStatusChange = async (task, newStatus) => {
     try {
-      setTasks(prev => prev.map(t => t.id === task.id ? { ...t, status: newStatus } : t));
-      await axios.put(`http://localhost:5000/api/tasks/${task.id}`, { status: newStatus }, { headers });
-      loadTasks(); // recarregar pra re-sync o timer exato
+      let updatedTimeSpent = task.time_spent || 0;
+      let newLastStartedAt = task.last_started_at || null;
+      let completedAtDate = task.completed_at || null;
+
+      // Lógica de Timer
+      if (task.status === 'fazendo' && newStatus !== 'fazendo' && task.last_started_at) {
+        const started = new Date(task.last_started_at).getTime();
+        const diffSeconds = Math.floor((Date.now() - started) / 1000);
+        updatedTimeSpent += diffSeconds;
+        newLastStartedAt = null;
+      }
+      
+      if (task.status !== 'fazendo' && newStatus === 'fazendo') {
+        newLastStartedAt = new Date().toISOString();
+      }
+
+      if (task.status !== 'feito' && newStatus === 'feito') {
+        completedAtDate = new Date().toISOString();
+      } else if (newStatus !== 'feito') {
+        completedAtDate = null;
+      }
+
+      await updateDoc(doc(db, 'tasks', task.id), {
+        status: newStatus,
+        time_spent: updatedTimeSpent,
+        last_started_at: newLastStartedAt,
+        completed_at: completedAtDate
+      });
     } catch (err) {
       showError("Não foi possível atualizar o status.");
-      loadTasks(); 
     }
   };
 
@@ -286,11 +352,13 @@ export default function Board() {
     e.preventDefault();
     if (!currentTask) return;
     try {
-      await axios.post(`http://localhost:5000/api/tasks/${currentTask.id}/share`, { email: shareEmail }, { headers });
+      const taskRef = doc(db, 'tasks', currentTask.id);
+      const updatedSharedWith = [...(currentTask.sharedWith || []), shareEmail];
+      await updateDoc(taskRef, { sharedWith: updatedSharedWith });
       setIsShareModalOpen(false);
       setShareEmail('');
     } catch (err) {
-      showError(err.response?.data?.error || "Erro ao tentar compartilhar com esse usuário.");
+      showError("Erro ao compartilhar tarefa.");
     }
   };
 

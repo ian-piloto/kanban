@@ -1,7 +1,8 @@
 import { useState, useEffect } from 'react';
 import { CheckCircle2, Clock, CalendarDays, Plus, AlertTriangle, ArrowRight, Activity, Tag } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
+import { db, auth } from '../firebase';
+import { collection, query, where, getDocs, or, addDoc, serverTimestamp } from 'firebase/firestore';
 
 export default function Dashboard() {
   const [metrics, setMetrics] = useState({
@@ -15,12 +16,8 @@ export default function Dashboard() {
   const [tagInput, setTagInput] = useState('');
 
   const navigate = useNavigate();
-  const token = localStorage.getItem('kanban_token');
-  const userStr = localStorage.getItem('kanban_user');
-  const user = userStr ? JSON.parse(userStr) : { name: '' };
+  const user = auth.currentUser || { displayName: 'Usuário' };
   
-  const headers = { Authorization: `Bearer ${token}` };
-
   const getGreeting = () => {
     const hour = new Date().getHours();
     if (hour < 12) return 'Bom dia';
@@ -30,8 +27,40 @@ export default function Dashboard() {
 
   const fetchMetrics = async () => {
     try {
-      const res = await axios.get('http://localhost:5000/api/dashboard', { headers });
-      setMetrics(res.data);
+      if (!auth.currentUser) return;
+      const user = auth.currentUser;
+
+      const q = query(
+        collection(db, 'tasks'),
+        or(
+          where('creator_id', '==', user.uid),
+          where('sharedWith', 'array-contains', user.email)
+        )
+      );
+
+      const querySnapshot = await getDocs(q);
+      const tasks = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+
+      // Calcular métricas
+      const now = new Date();
+      const sevenDaysAgo = new Date();
+      sevenDaysAgo.setDate(now.getDate() - 7);
+
+      const metricsData = {
+        total: tasks.length,
+        fazer: tasks.filter(t => t.status === 'fazer').length,
+        fazendo: tasks.filter(t => t.status === 'fazendo').length,
+        feito: tasks.filter(t => t.status === 'feito').length,
+        atrasadas: tasks.filter(t => t.status !== 'feito' && t.deadline && new Date(t.deadline) < now).length,
+        urgentes: tasks.filter(t => t.status !== 'feito' && t.priority === 'alta').length,
+        concluidasUltimos7Dias: tasks.filter(t => t.status === 'feito' && t.completed_at && new Date(t.completed_at) >= sevenDaysAgo).length,
+        tarefasProximas: tasks
+          .filter(t => t.status !== 'feito' && t.deadline)
+          .sort((a, b) => new Date(a.deadline) - new Date(b.deadline))
+          .slice(0, 5)
+      };
+
+      setMetrics(metricsData);
     } catch (err) {
       console.error("Erro ao carregar dashboard:", err);
     } finally {
@@ -51,11 +80,23 @@ export default function Dashboard() {
       return;
     }
     const payload = {
-      ...form,
-      allocated_time: (parseInt(form.alloc_hours || 0) * 3600) + (parseInt(form.alloc_mins || 0) * 60)
+      title: form.title,
+      description: form.description || '',
+      priority: form.priority || 'media',
+      status: form.status || 'fazer',
+      category: form.category || '',
+      deadline: form.deadline || '',
+      tags: form.tags || [],
+      allocated_time: (parseInt(form.alloc_hours || 0) * 3600) + (parseInt(form.alloc_mins || 0) * 60),
+      time_spent: 0,
+      last_started_at: null,
+      completed_at: null,
+      creator_id: auth.currentUser.uid,
+      created_at: serverTimestamp(),
+      sharedWith: []
     };
     try {
-      await axios.post('http://localhost:5000/api/tasks', payload, { headers });
+      await addDoc(collection(db, 'tasks'), payload);
       setIsModalOpen(false);
       setForm({ title: '', description: '', priority: 'media', status: 'fazer', category: 'casa', deadline: '', tags: [], alloc_hours: 0, alloc_mins: 0 });
       fetchMetrics();
@@ -106,7 +147,7 @@ export default function Dashboard() {
           <h1 className="relative text-5xl md:text-6xl font-extrabold text-white tracking-tight flex items-center gap-3 drop-shadow-2xl">
              <span className="opacity-90">{getGreeting()},</span> 
              <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-brand-400 to-indigo-400 animate-gradient-x drop-shadow-md pb-1">
-               {user.name.split(' ')[0]}
+               {(user.displayName || 'Usuário').split(' ')[0]}
              </span>! <span className="animate-bounce origin-bottom-right">👋</span>
           </h1>
         </div>
@@ -177,7 +218,7 @@ export default function Dashboard() {
                               <div className="flex items-center gap-2 mt-1">
                                  <span className="text-xs text-dark-muted flex items-center gap-1">
                                     <CalendarDays className="w-3 h-3" /> 
-                                    {new Date(task.deadline).toLocaleDateString()}
+                                    {task.deadline ? new Date(task.deadline).toLocaleDateString() : 'Sem prazo'}
                                  </span>
                                  {task.category && (
                                    <span className="text-xs bg-dark-bg px-2 py-0.5 rounded-md text-indigo-400 border border-dark-border">{task.category}</span>

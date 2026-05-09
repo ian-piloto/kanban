@@ -8,4 +8,9 @@ export default defineConfig({
     tailwindcss(),
     react()
   ],
+  server: {
+    proxy: {
+      '/api': 'http://localhost:5001/kanban-tds-2026/us-central1/api'
+    }
+  }
 })

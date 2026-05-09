@@ -1,22 +1,40 @@
-import { Outlet, Navigate, Link, useLocation } from 'react-router-dom';
+import { useState, useEffect } from 'react';
+import { Outlet, Link, useLocation, useNavigate, Navigate } from 'react-router-dom';
 import { LayoutDashboard, KanbanSquare, Settings, CheckSquare, Bell, UserCircle, LogOut } from 'lucide-react';
+import { auth } from '../firebase';
+import { onAuthStateChanged, signOut } from 'firebase/auth';
 
 export default function Layout() {
-  const token = localStorage.getItem('kanban_token');
-  const userStr = localStorage.getItem('kanban_user');
+  const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(true);
   const location = useLocation();
-  
-  if (!token) {
-    return <Navigate to="/login" replace />;
-  }
+  const navigate = useNavigate();
 
-  const user = userStr ? JSON.parse(userStr) : null;
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
+      if (currentUser) {
+        setUser({
+          id: currentUser.uid,
+          name: currentUser.displayName || 'Usuário',
+          email: currentUser.email,
+          avatar_url: currentUser.photoURL || `https://api.dicebear.com/7.x/initials/svg?seed=${encodeURIComponent(currentUser.displayName || 'U')}&backgroundColor=0f172a&textColor=f8fafc`
+        });
+      } else {
+        setUser(null);
+        navigate('/login');
+      }
+      setLoading(false);
+    });
+    return () => unsubscribe();
+  }, [navigate]);
 
-  const handleLogout = () => {
-    localStorage.removeItem('kanban_token');
-    localStorage.removeItem('kanban_user');
-    window.location.href = '/login';
+  const handleLogout = async () => {
+    await signOut(auth);
+    navigate('/login');
   };
+
+  if (loading) return <div className="min-h-screen bg-dark-bg flex items-center justify-center text-white">Carregando...</div>;
+  if (!user) return <Navigate to="/login" replace />;
 
   const navItemClass = (path) => `
     flex items-center gap-3 px-4 py-3 rounded-xl transition-all font-medium
