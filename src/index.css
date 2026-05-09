@@ -28,11 +28,11 @@
 }
 
 .light {
-  --bg: #f8fafc;
+  --bg: #f1f5f9;
   --card: #ffffff;
-  --border: #e2e8f0;
-  --text: #0f172a;
-  --muted: #64748b;
+  --border: #cbd5e1;
+  --text: #1e293b;
+  --muted: #475569;
 }
 
 body {
@@ -53,10 +53,11 @@ body {
 }
 
 .glass {
-  background: rgba(30, 41, 59, 0.7);
+  background: var(--card);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
-  border: 1px solid rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--border);
+  box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
 }
 
 .card-hover {

@@ -60,13 +60,13 @@ export default function Settings() {
           <div className="p-6 border-b border-dark-border/50 bg-dark-card/30">
              <div className="flex items-center gap-3">
                 <Sun className="text-brand-400 w-5 h-5" />
-                <h3 className="font-bold text-white">Aparência e Estilo</h3>
+                <h3 className="font-bold text-dark-text">Aparência e Estilo</h3>
              </div>
           </div>
           <div className="p-6 space-y-6">
              <div className="flex items-center justify-between">
                 <div>
-                   <p className="text-white font-medium">Tema do Sistema</p>
+                   <p className="text-dark-text font-medium">Tema do Sistema</p>
                    <p className="text-dark-muted text-xs mt-0.5">Alterne entre os modos claro e escuro</p>
                 </div>
                 <button 
@@ -84,41 +84,11 @@ export default function Settings() {
           </div>
         </div>
 
-        {/* Conta e Segurança */}
-        <div className="glass rounded-3xl border border-dark-border overflow-hidden">
-          <div className="p-6 border-b border-dark-border/50 bg-dark-card/30">
-             <div className="flex items-center gap-3">
-                <Shield className="text-brand-400 w-5 h-5" />
-                <h3 className="font-bold text-white">Conta e Segurança</h3>
-             </div>
-          </div>
-          <div className="p-6 space-y-2">
-             <button className="w-full flex items-center justify-between p-3 rounded-xl hover:bg-dark-card/50 transition-colors group">
-                <div className="flex items-center gap-3">
-                   <div className="p-2 rounded-lg bg-indigo-500/10 text-indigo-400">
-                      <User className="w-4 h-4" />
-                   </div>
-                   <span className="text-sm font-medium text-white group-hover:text-brand-400 transition-colors">Editar Informações do Perfil</span>
-                </div>
-                <div className="text-dark-muted text-xs">Acessar</div>
-             </button>
-             <button className="w-full flex items-center justify-between p-3 rounded-xl hover:bg-dark-card/50 transition-colors group">
-                <div className="flex items-center gap-3">
-                   <div className="p-2 rounded-lg bg-amber-500/10 text-amber-400">
-                      <Bell className="w-4 h-4" />
-                   </div>
-                   <span className="text-sm font-medium text-white group-hover:text-brand-400 transition-colors">Configurações de Notificação</span>
-                </div>
-                <div className="text-dark-muted text-xs">Ativado</div>
-             </button>
-          </div>
-        </div>
-
         {/* Perigo */}
         <div className="glass rounded-3xl border border-red-500/10 overflow-hidden">
            <div className="p-6 flex items-center justify-between">
               <div>
-                 <p className="text-white font-medium">Finalizar Sessão</p>
+                 <p className="text-dark-text font-medium">Finalizar Sessão</p>
                  <p className="text-dark-muted text-xs mt-0.5">Saia da sua conta com segurança</p>
               </div>
               <button 

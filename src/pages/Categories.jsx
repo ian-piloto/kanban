@@ -45,7 +45,7 @@ export default function Categories() {
   return (
     <div className="max-w-6xl mx-auto">
       <div className="mb-10">
-        <h1 className="text-3xl font-bold text-white tracking-tight">Minhas Categorias</h1>
+        <h1 className="text-3xl font-bold text-dark-text tracking-tight">Minhas Categorias</h1>
         <p className="text-dark-muted mt-1 text-sm">Visualize suas tarefas organizadas por contexto</p>
       </div>
 
@@ -62,7 +62,7 @@ export default function Categories() {
                      <div className={`p-2 rounded-xl bg-dark-bg/50 ${cat.color} border ${cat.border}`}>
                         <Icon className="w-5 h-5" />
                      </div>
-                     <h2 className="text-xl font-bold text-white capitalize">{catKey}</h2>
+                     <h2 className="text-xl font-bold text-dark-text capitalize">{catKey}</h2>
                   </div>
                   <span className="text-sm font-bold text-dark-muted bg-dark-bg/50 px-3 py-1 rounded-full border border-dark-border">
                     {catTasks.length} {catTasks.length === 1 ? 'tarefa' : 'tarefas'}
@@ -78,7 +78,7 @@ export default function Categories() {
                     catTasks.slice(0, 5).map(task => (
                       <div key={task.id} className="flex items-center gap-3 p-3 rounded-xl bg-dark-card/30 border border-dark-border/50 hover:border-brand-500/20 transition-colors">
                         <div className={`w-2 h-2 rounded-full ${task.status === 'feito' ? 'bg-emerald-500' : task.status === 'fazendo' ? 'bg-amber-500' : 'bg-blue-500'}`}></div>
-                        <span className={`flex-1 text-sm font-medium ${task.status === 'feito' ? 'text-dark-muted line-through' : 'text-white'}`}>
+                        <span className={`flex-1 text-sm font-medium ${task.status === 'feito' ? 'text-dark-muted line-through' : 'text-dark-text'}`}>
                           {task.title}
                         </span>
                         {task.status === 'feito' ? (
@@ -105,7 +105,7 @@ export default function Categories() {
                   </div>
                   <div className="flex justify-between mt-2 px-1">
                      <span className="text-[10px] text-dark-muted uppercase font-bold">Progresso</span>
-                     <span className="text-[10px] text-white font-bold">
+                     <span className="text-[10px] text-dark-text font-bold">
                         {catTasks.length > 0 ? Math.round((catTasks.filter(t => t.status === 'feito').length / catTasks.length) * 100) : 0}%
                      </span>
                   </div>

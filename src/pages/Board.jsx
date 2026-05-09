@@ -36,7 +36,7 @@ const DroppableColumn = ({ id, title, accentColor, children, taskCount }) => {
       <div className="mb-4 flex items-center justify-between">
         <div className="flex items-center gap-2">
           <div className={`w-3 h-3 rounded-full bg-${accentColor}`}></div>
-          <h2 className="font-semibold text-lg text-white">{title}</h2>
+          <h2 className="font-semibold text-lg text-dark-text">{title}</h2>
         </div>
         <span className="bg-dark-card text-dark-muted px-2.5 py-0.5 rounded-full text-sm font-medium border border-dark-border">
           {taskCount}
@@ -153,7 +153,7 @@ const DraggableTask = ({ task, onEdit, onDelete, onShare, isOverlay = false }) =
         </div>
       </div>
 
-      <h3 className="font-semibold text-white text-lg leading-tight mb-2 pr-6">
+      <h3 className="font-semibold text-dark-text text-lg leading-tight mb-2 pr-6">
         <GripVertical className="absolute right-4 top-[50%] -translate-y-1/2 w-5 h-5 text-dark-border group-hover:text-dark-muted transition-colors opacity-30 group-hover:opacity-100" />
         {task.title}
       </h3>
@@ -395,7 +395,7 @@ export default function Board() {
 
       <div className="flex justify-between items-center mb-10">
         <div>
-          <h1 className="text-3xl font-bold text-white tracking-tight">Project Board</h1>
+          <h1 className="text-3xl font-bold text-dark-text tracking-tight">Project Board</h1>
           <p className="text-dark-muted mt-1 text-sm">Gerencie fluxo e calcule o seu tempo produtivo!</p>
         </div>
         <button 
@@ -447,10 +447,10 @@ export default function Board() {
              <div className="w-16 h-16 bg-red-500/10 rounded-full flex mx-auto items-center justify-center mb-4 border border-red-500/20">
                <Trash2 className="w-8 h-8 text-red-400" />
              </div>
-             <h2 className="text-xl font-bold text-white mb-2">Excluir tarefa?</h2>
+             <h2 className="text-xl font-bold text-dark-text mb-2">Excluir tarefa?</h2>
              <p className="text-dark-muted text-sm mb-6">Essa ação não pode ser desfeita. Apenas o criador tem permissão.</p>
              <div className="flex gap-3">
-               <button onClick={() => setDeleteConfirmId(null)} className="flex-1 py-2.5 text-dark-muted bg-dark-card hover:bg-dark-border hover:text-white transition-colors font-medium rounded-xl border border-dark-border">
+               <button onClick={() => setDeleteConfirmId(null)} className="flex-1 py-2.5 text-dark-muted bg-dark-card hover:bg-dark-border hover:text-dark-text transition-colors font-medium rounded-xl border border-dark-border">
                  Cancelar
                </button>
                <button onClick={confirmDelete} className="flex-1 bg-red-600 hover:bg-red-500 text-white font-medium py-2.5 rounded-xl transition-colors shadow-lg shadow-red-500/20">
@@ -465,23 +465,23 @@ export default function Board() {
       {isModalOpen && (
         <div className="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in">
           <div className="glass w-full max-w-lg rounded-3xl p-8 shadow-2xl border border-dark-border overflow-y-auto max-h-[90vh] custom-scrollbar">
-            <h2 className="text-2xl font-bold text-white mb-6 tracking-tight">{currentTask ? 'Editar Tarefa' : 'Nova Tarefa'}</h2>
+            <h2 className="text-2xl font-bold text-dark-text mb-6 tracking-tight">{currentTask ? 'Editar Tarefa' : 'Nova Tarefa'}</h2>
             
              <form onSubmit={handleSaveTask} className="space-y-4">
               <div>
                 <label className="text-sm font-medium text-dark-muted ml-1 mb-1 block">Título</label>
-                <input required type="text" value={form.title} onChange={e => setForm({...form, title: e.target.value})} className="w-full bg-dark-bg/80 border border-dark-border text-white rounded-xl px-4 py-3 focus:ring-2 focus:ring-brand-500 outline-none" placeholder="O que você precisa fazer?" />
+                <input required type="text" value={form.title} onChange={e => setForm({...form, title: e.target.value})} className="w-full bg-dark-bg/80 border border-dark-border text-dark-text rounded-xl px-4 py-3 focus:ring-2 focus:ring-brand-500 outline-none" placeholder="O que você precisa fazer?" />
               </div>
               
               <div>
                 <label className="text-sm font-medium text-dark-muted ml-1 mb-1 block">Descrição</label>
-                <textarea rows="3" value={form.description} onChange={e => setForm({...form, description: e.target.value})} className="w-full bg-dark-bg/80 border border-dark-border text-white rounded-xl px-4 py-3 focus:ring-2 focus:ring-brand-500 outline-none resize-none" placeholder="Detalhes da tarefa..."></textarea>
+                <textarea rows="3" value={form.description} onChange={e => setForm({...form, description: e.target.value})} className="w-full bg-dark-bg/80 border border-dark-border text-dark-text rounded-xl px-4 py-3 focus:ring-2 focus:ring-brand-500 outline-none resize-none" placeholder="Detalhes da tarefa..."></textarea>
               </div>
 
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <label className="text-sm font-medium text-dark-muted ml-1 mb-1 block">Prioridade</label>
-                  <select value={form.priority} onChange={e => setForm({...form, priority: e.target.value})} className="w-full bg-dark-bg/80 border border-dark-border text-white rounded-xl px-4 py-3 outline-none focus:ring-2 focus:ring-brand-500 appearance-none">
+                  <select value={form.priority} onChange={e => setForm({...form, priority: e.target.value})} className="w-full bg-dark-bg/80 border border-dark-border text-dark-text rounded-xl px-4 py-3 outline-none focus:ring-2 focus:ring-brand-500 appearance-none">
                     <option value="baixa">Baixa</option>
                     <option value="media">Média</option>
                     <option value="alta">Alta</option>
@@ -489,11 +489,11 @@ export default function Board() {
                 </div>
                 <div>
                    <label className="text-sm font-medium text-dark-muted ml-1 mb-1 block">Data Vencimento</label>
-                   <input type="date" value={form.deadline} onChange={e => setForm({...form, deadline: e.target.value})} className="w-full bg-dark-bg/80 border border-dark-border text-white rounded-xl px-4 py-3 outline-none focus:ring-2 focus:ring-brand-500" />
+                   <input type="date" value={form.deadline} onChange={e => setForm({...form, deadline: e.target.value})} className="w-full bg-dark-bg/80 border border-dark-border text-dark-text rounded-xl px-4 py-3 outline-none focus:ring-2 focus:ring-brand-500" />
                 </div>
                 <div>
                   <label className="text-sm font-medium text-dark-muted ml-1 mb-1 block">Categoria Fixa</label>
-                  <select value={form.category} onChange={e => setForm({...form, category: e.target.value})} className="w-full bg-dark-bg/80 border border-dark-border text-white rounded-xl px-4 py-3 outline-none focus:ring-2 focus:ring-brand-500 appearance-none">
+                  <select value={form.category} onChange={e => setForm({...form, category: e.target.value})} className="w-full bg-dark-bg/80 border border-dark-border text-dark-text rounded-xl px-4 py-3 outline-none focus:ring-2 focus:ring-brand-500 appearance-none">
                     <option value="casa">Casa</option>
                     <option value="trabalho">Trabalho</option>
                     <option value="estudos">Estudos</option>
@@ -502,7 +502,7 @@ export default function Board() {
                 </div>
                 <div>
                    <label className="text-sm font-medium text-dark-muted ml-1 mb-1 block">Status</label>
-                   <select value={form.status} onChange={e => setForm({...form, status: e.target.value})} className="w-full bg-dark-bg/80 border border-dark-border text-white rounded-xl px-4 py-3 outline-none focus:ring-2 focus:ring-brand-500 appearance-none">
+                   <select value={form.status} onChange={e => setForm({...form, status: e.target.value})} className="w-full bg-dark-bg/80 border border-dark-border text-dark-text rounded-xl px-4 py-3 outline-none focus:ring-2 focus:ring-brand-500 appearance-none">
                      <option value="fazer">A Fazer</option>
                      <option value="fazendo">Em Andamento</option>
                      <option value="feito">Concluído</option>
@@ -513,11 +513,11 @@ export default function Board() {
               <div className="grid grid-cols-2 gap-4 pt-1">
                 <div>
                    <label className="text-sm font-medium text-dark-muted ml-1 mb-1 block">Tempo Estimado (Horas)</label>
-                   <input type="number" min="0" value={form.alloc_hours} onChange={e => setForm({...form, alloc_hours: e.target.value})} className="w-full bg-dark-bg/80 border border-dark-border text-white rounded-xl px-4 py-3 outline-none focus:ring-2 focus:ring-brand-500" placeholder="0" />
+                   <input type="number" min="0" value={form.alloc_hours} onChange={e => setForm({...form, alloc_hours: e.target.value})} className="w-full bg-dark-bg/80 border border-dark-border text-dark-text rounded-xl px-4 py-3 outline-none focus:ring-2 focus:ring-brand-500" placeholder="0" />
                 </div>
                 <div>
                    <label className="text-sm font-medium text-dark-muted ml-1 mb-1 block">Minutos</label>
-                   <input type="number" min="0" max="59" value={form.alloc_mins} onChange={e => setForm({...form, alloc_mins: e.target.value})} className="w-full bg-dark-bg/80 border border-dark-border text-white rounded-xl px-4 py-3 outline-none focus:ring-2 focus:ring-brand-500" placeholder="0" />
+                   <input type="number" min="0" max="59" value={form.alloc_mins} onChange={e => setForm({...form, alloc_mins: e.target.value})} className="w-full bg-dark-bg/80 border border-dark-border text-dark-text rounded-xl px-4 py-3 outline-none focus:ring-2 focus:ring-brand-500" placeholder="0" />
                 </div>
               </div>
 
@@ -527,15 +527,15 @@ export default function Board() {
                   {form.tags && form.tags.map(t => (
                     <span key={t} className="bg-brand-500/20 text-brand-400 border border-brand-500/30 px-3 py-1.5 rounded-lg text-sm flex items-center gap-2">
                       <Tag className="w-3 h-3"/> {t}
-                      <button type="button" onClick={() => handleRemoveTag(t)} className="text-brand-300 hover:text-white">&times;</button>
+                      <button type="button" onClick={() => handleRemoveTag(t)} className="text-brand-300 hover:text-dark-text">&times;</button>
                     </span>
                   ))}
-                  <input type="text" value={tagInput} onChange={e => setTagInput(e.target.value)} onKeyDown={handleAddTag} className="flex-1 min-w-[120px] bg-transparent outline-none text-white px-2 text-sm" placeholder={form.tags.length === 0 ? "Adicionar tag..." : ""} />
+                  <input type="text" value={tagInput} onChange={e => setTagInput(e.target.value)} onKeyDown={handleAddTag} className="flex-1 min-w-[120px] bg-transparent outline-none text-dark-text px-2 text-sm" placeholder={form.tags.length === 0 ? "Adicionar tag..." : ""} />
                 </div>
               </div>
 
               <div className="flex items-center justify-end gap-3 pt-6 border-t border-dark-border/50">
-                <button type="button" onClick={() => setIsModalOpen(false)} className="px-5 py-3 text-dark-muted hover:text-white transition-colors font-medium rounded-xl hover:bg-dark-card">Cancelar</button>
+                <button type="button" onClick={() => setIsModalOpen(false)} className="px-5 py-3 text-dark-muted hover:text-dark-text transition-colors font-medium rounded-xl hover:bg-dark-card">Cancelar</button>
                 <button type="submit" className="bg-brand-600 hover:bg-brand-500 text-white font-bold px-8 py-3 rounded-xl transition-all shadow-lg shadow-brand-500/30 hover:-translate-y-0.5">
                   Salvar Tarefa
                 </button>
@@ -553,12 +553,12 @@ export default function Board() {
                 <div className="w-10 h-10 rounded-full bg-purple-500/20 flex items-center justify-center border border-purple-500/30">
                   <Users className="text-purple-400 w-5 h-5"/>
                 </div>
-                <h2 className="text-xl font-bold text-white">Compartilhar Tarefa</h2>
+                <h2 className="text-xl font-bold text-dark-text">Compartilhar Tarefa</h2>
              </div>
              <form onSubmit={handleShare} className="space-y-5">
-               <input type="email" required value={shareEmail} onChange={e => setShareEmail(e.target.value)} className="w-full bg-dark-bg/80 border border-dark-border text-white rounded-xl px-4 py-3 outline-none focus:ring-2 focus:ring-brand-500" placeholder="usuario@email.com" />
+               <input type="email" required value={shareEmail} onChange={e => setShareEmail(e.target.value)} className="w-full bg-dark-bg/80 border border-dark-border text-dark-text rounded-xl px-4 py-3 outline-none focus:ring-2 focus:ring-brand-500" placeholder="usuario@email.com" />
                <div className="flex gap-3 pt-2">
-                 <button type="button" onClick={() => setIsShareModalOpen(false)} className="flex-1 py-2.5 text-dark-muted bg-dark-card hover:bg-dark-border hover:text-white transition-colors font-medium rounded-xl border border-dark-border">Cancelar</button>
+                 <button type="button" onClick={() => setIsShareModalOpen(false)} className="flex-1 py-2.5 text-dark-muted bg-dark-card hover:bg-dark-border hover:text-dark-text transition-colors font-medium rounded-xl border border-dark-border">Cancelar</button>
                  <button type="submit" className="flex-1 bg-purple-600 hover:bg-purple-500 text-white font-medium py-2.5 rounded-xl transition-colors shadow-lg shadow-purple-500/20">Enviar</button>
                </div>
              </form>

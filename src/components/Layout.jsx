@@ -61,7 +61,7 @@ export default function Layout() {
               <div className="w-10 h-10 bg-gradient-to-tr from-brand-500 to-indigo-500 rounded-xl flex items-center justify-center shadow-lg shadow-brand-500/30">
                  <CheckSquare className="text-white w-6 h-6" />
               </div>
-              <span className="font-bold text-2xl tracking-tight text-white">SyncBoard</span>
+              <span className="font-bold text-2xl tracking-tight text-dark-text">SyncBoard</span>
            </div>
 
            <div className="text-xs font-semibold text-dark-muted uppercase tracking-wider mb-3 px-2">Menu Principal</div>
@@ -96,7 +96,7 @@ export default function Layout() {
                  )}
               </div>
               <div className="flex-1 overflow-hidden">
-                 <p className="text-white font-medium text-sm truncate">{user?.name}</p>
+                 <p className="text-dark-text font-medium text-sm truncate">{user?.name}</p>
                  <button onClick={handleLogout} className="text-xs text-dark-muted hover:text-red-400 flex items-center gap-1 mt-0.5 transition-colors">
                    <LogOut className="w-3 h-3" /> Sair da conta
                  </button>
@@ -113,7 +113,7 @@ export default function Layout() {
                <div className="w-8 h-8 bg-brand-500 rounded-lg flex items-center justify-center">
                  <CheckSquare className="text-white w-4 h-4" />
                </div>
-               <span className="font-bold text-lg text-white">SyncBoard</span>
+               <span className="font-bold text-lg text-dark-text">SyncBoard</span>
             </div>
             <button onClick={handleLogout} className="p-2 text-dark-muted hover:text-red-400">
                <LogOut className="w-5 h-5" />

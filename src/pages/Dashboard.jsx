@@ -123,7 +123,7 @@ export default function Dashboard() {
       <div className="flex justify-between items-start relative z-10">
         <div>
           <p className="text-dark-muted font-medium mb-2">{title}</p>
-          <h3 className="text-5xl font-bold text-white tracking-tight">{loading ? '...' : value}</h3>
+          <h3 className="text-5xl font-bold text-dark-text tracking-tight">{loading ? '...' : value}</h3>
         </div>
         <div className={`p-4 rounded-2xl ${bg} bg-opacity-10 border border-${color}/20`}>
           <Icon className={`w-8 h-8 text-${color}`} />
@@ -144,7 +144,7 @@ export default function Dashboard() {
       <div className="mb-12 relative animate-in slide-in-from-bottom-4 duration-700 ease-out">
         <div className="inline-block relative">
           <div className="absolute -inset-1 blur-xl opacity-30 bg-gradient-to-r from-brand-500 to-purple-500 rounded-lg"></div>
-          <h1 className="relative text-5xl md:text-6xl font-extrabold text-white tracking-tight flex items-center gap-3 drop-shadow-2xl">
+          <h1 className="relative text-5xl md:text-6xl font-extrabold text-dark-text tracking-tight flex items-center gap-3 drop-shadow-2xl">
              <span className="opacity-90">{getGreeting()},</span> 
              <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-brand-400 to-indigo-400 animate-gradient-x drop-shadow-md pb-1">
                {(user.displayName || 'Usuário').split(' ')[0]}
@@ -184,7 +184,7 @@ export default function Dashboard() {
          {/* Lista de Próximas a Vencer */}
          <div className="lg:col-span-2 glass rounded-3xl p-6 border border-dark-border">
             <div className="flex justify-between items-center mb-6">
-               <h2 className="text-xl font-bold text-white flex items-center gap-2">
+               <h2 className="text-xl font-bold text-dark-text flex items-center gap-2">
                   <CalendarDays className="text-brand-400 w-5 h-5"/> Próximas a Vencer
                </h2>
                <button onClick={() => navigate('/board')} className="text-sm font-medium text-brand-400 hover:text-brand-300 flex items-center gap-1 transition-colors">
@@ -214,7 +214,7 @@ export default function Dashboard() {
                               <Clock className="w-6 h-6" />
                            </div>
                            <div>
-                              <h3 className="font-semibold text-white">{task.title}</h3>
+                              <h3 className="font-semibold text-dark-text">{task.title}</h3>
                               <div className="flex items-center gap-2 mt-1">
                                  <span className="text-xs text-dark-muted flex items-center gap-1">
                                     <CalendarDays className="w-3 h-3" /> 
@@ -274,23 +274,23 @@ export default function Dashboard() {
       {isModalOpen && (
         <div className="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in duration-200">
           <div className="glass w-full max-w-lg rounded-3xl p-8 shadow-2xl border border-dark-border overflow-y-auto max-h-[90vh] custom-scrollbar">
-            <h2 className="text-2xl font-bold text-white mb-6 tracking-tight">📝 Criar Nova Tarefa</h2>
+            <h2 className="text-2xl font-bold text-dark-text mb-6 tracking-tight">📝 Criar Nova Tarefa</h2>
             
             <form onSubmit={handleSaveTask} className="space-y-4">
               <div>
                 <label className="text-sm font-medium text-dark-muted ml-1 mb-1 block">Título</label>
-                <input required type="text" value={form.title} onChange={e => setForm({...form, title: e.target.value})} className="w-full bg-dark-bg/80 border border-dark-border text-white rounded-xl px-4 py-3 focus:ring-2 focus:ring-brand-500 outline-none" placeholder="O que você precisa fazer?" />
+                <input required type="text" value={form.title} onChange={e => setForm({...form, title: e.target.value})} className="w-full bg-dark-bg/80 border border-dark-border text-dark-text rounded-xl px-4 py-3 focus:ring-2 focus:ring-brand-500 outline-none" placeholder="O que você precisa fazer?" />
               </div>
               
               <div>
                 <label className="text-sm font-medium text-dark-muted ml-1 mb-1 block">Descrição</label>
-                <textarea rows="3" value={form.description} onChange={e => setForm({...form, description: e.target.value})} className="w-full bg-dark-bg/80 border border-dark-border text-white rounded-xl px-4 py-3 focus:ring-2 focus:ring-brand-500 outline-none resize-none" placeholder="Detalhes da tarefa..."></textarea>
+                <textarea rows="3" value={form.description} onChange={e => setForm({...form, description: e.target.value})} className="w-full bg-dark-bg/80 border border-dark-border text-dark-text rounded-xl px-4 py-3 focus:ring-2 focus:ring-brand-500 outline-none resize-none" placeholder="Detalhes da tarefa..."></textarea>
               </div>
 
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <label className="text-sm font-medium text-dark-muted ml-1 mb-1 block">Prioridade</label>
-                  <select value={form.priority} onChange={e => setForm({...form, priority: e.target.value})} className="w-full bg-dark-bg/80 border border-dark-border text-white rounded-xl px-4 py-3 outline-none focus:ring-2 focus:ring-brand-500 appearance-none">
+                  <select value={form.priority} onChange={e => setForm({...form, priority: e.target.value})} className="w-full bg-dark-bg/80 border border-dark-border text-dark-text rounded-xl px-4 py-3 outline-none focus:ring-2 focus:ring-brand-500 appearance-none">
                     <option value="baixa">Baixa</option>
                     <option value="media">Média</option>
                     <option value="alta">Alta</option>
@@ -298,11 +298,11 @@ export default function Dashboard() {
                 </div>
                 <div>
                    <label className="text-sm font-medium text-dark-muted ml-1 mb-1 block">Data Vencimento</label>
-                   <input type="date" value={form.deadline} onChange={e => setForm({...form, deadline: e.target.value})} className="w-full bg-dark-bg/80 border border-dark-border text-white rounded-xl px-4 py-3 outline-none focus:ring-2 focus:ring-brand-500" />
+                   <input type="date" value={form.deadline} onChange={e => setForm({...form, deadline: e.target.value})} className="w-full bg-dark-bg/80 border border-dark-border text-dark-text rounded-xl px-4 py-3 outline-none focus:ring-2 focus:ring-brand-500" />
                 </div>
                 <div>
                   <label className="text-sm font-medium text-dark-muted ml-1 mb-1 block">Categoria Fixa</label>
-                  <select value={form.category} onChange={e => setForm({...form, category: e.target.value})} className="w-full bg-dark-bg/80 border border-dark-border text-white rounded-xl px-4 py-3 outline-none focus:ring-2 focus:ring-brand-500 appearance-none">
+                  <select value={form.category} onChange={e => setForm({...form, category: e.target.value})} className="w-full bg-dark-bg/80 border border-dark-border text-dark-text rounded-xl px-4 py-3 outline-none focus:ring-2 focus:ring-brand-500 appearance-none">
                     <option value="casa">Casa</option>
                     <option value="trabalho">Trabalho</option>
                     <option value="estudos">Estudos</option>
@@ -314,11 +314,11 @@ export default function Dashboard() {
               <div className="grid grid-cols-2 gap-4 pt-1">
                 <div>
                    <label className="text-sm font-medium text-dark-muted ml-1 mb-1 block">Tempo Estimado (Horas)</label>
-                   <input type="number" min="0" value={form.alloc_hours} onChange={e => setForm({...form, alloc_hours: e.target.value})} className="w-full bg-dark-bg/80 border border-dark-border text-white rounded-xl px-4 py-3 outline-none focus:ring-2 focus:ring-brand-500" placeholder="0" />
+                   <input type="number" min="0" value={form.alloc_hours} onChange={e => setForm({...form, alloc_hours: e.target.value})} className="w-full bg-dark-bg/80 border border-dark-border text-dark-text rounded-xl px-4 py-3 outline-none focus:ring-2 focus:ring-brand-500" placeholder="0" />
                 </div>
                 <div>
                    <label className="text-sm font-medium text-dark-muted ml-1 mb-1 block">Minutos</label>
-                   <input type="number" min="0" max="59" value={form.alloc_mins} onChange={e => setForm({...form, alloc_mins: e.target.value})} className="w-full bg-dark-bg/80 border border-dark-border text-white rounded-xl px-4 py-3 outline-none focus:ring-2 focus:ring-brand-500" placeholder="0" />
+                   <input type="number" min="0" max="59" value={form.alloc_mins} onChange={e => setForm({...form, alloc_mins: e.target.value})} className="w-full bg-dark-bg/80 border border-dark-border text-dark-text rounded-xl px-4 py-3 outline-none focus:ring-2 focus:ring-brand-500" placeholder="0" />
                 </div>
               </div>
 
@@ -328,15 +328,15 @@ export default function Dashboard() {
                   {form.tags && form.tags.map(t => (
                     <span key={t} className="bg-brand-500/20 text-brand-400 border border-brand-500/30 px-3 py-1.5 rounded-lg text-sm flex items-center gap-2">
                       <Tag className="w-3 h-3"/> {t}
-                      <button type="button" onClick={() => setForm({...form, tags: form.tags.filter(tg=> tg!==t)})} className="text-brand-300 hover:text-white">&times;</button>
+                      <button type="button" onClick={() => setForm({...form, tags: form.tags.filter(tg=> tg!==t)})} className="text-brand-300 hover:text-dark-text">&times;</button>
                     </span>
                   ))}
-                  <input type="text" value={tagInput} onChange={e => setTagInput(e.target.value)} onKeyDown={handleAddTag} className="flex-1 min-w-[120px] bg-transparent outline-none text-white px-2 text-sm" placeholder={form.tags.length === 0 ? "Adicionar tag..." : ""} />
+                  <input type="text" value={tagInput} onChange={e => setTagInput(e.target.value)} onKeyDown={handleAddTag} className="flex-1 min-w-[120px] bg-transparent outline-none text-dark-text px-2 text-sm" placeholder={form.tags.length === 0 ? "Adicionar tag..." : ""} />
                 </div>
               </div>
 
               <div className="flex items-center justify-end gap-3 pt-6 border-t border-dark-border/50">
-                <button type="button" onClick={() => setIsModalOpen(false)} className="px-5 py-3 text-dark-muted hover:text-white transition-colors font-medium rounded-xl hover:bg-dark-card">Cancelar</button>
+                <button type="button" onClick={() => setIsModalOpen(false)} className="px-5 py-3 text-dark-muted hover:text-dark-text transition-colors font-medium rounded-xl hover:bg-dark-card">Cancelar</button>
                 <button type="submit" className="bg-brand-600 hover:bg-brand-500 text-white font-bold px-8 py-3 rounded-xl transition-all shadow-lg shadow-brand-500/30 hover:-translate-y-0.5">
                   Salvar Tarefa
                 </button>
